@@ -6,8 +6,11 @@ bl_info = {
     "category": "Import-Export"
 }
 
-import bpy
+import os
 from xml.etree import ElementTree as et
+
+import bpy
+from bpy_extras.io_utils import ExportHelper
 
 
 def main(filename):
@@ -54,20 +57,29 @@ def main(filename):
     scene.objects.link(obj)
 
 
-class ImportCityGMLBasic(bpy.types.Operator):
-    """Tooltip"""
-    bl_idname = "io.city_gml_basic_import"
-    bl_label = "CityGML basic import"
+# pick folder and import from... maybe this is a bad name.
+class CityGMLDirectorySelector(bpy.types.Operator, ExportHelper):
+    bl_idname = "wm.citygml_folder_selector"
+    bl_label = "pick an xml file"
+
+    filename_ext = ".xml"
+    use_filter_folder = True
 
     def execute(self, context):
-        filename = '/home/zeffii/Documents/woow/12-90-BEVERWAARD.xml'
-        main(filename)
-        return {'FINISHED'}
+        fdir = self.properties.filepath
+        main(fdir)
+        return{'FINISHED'}
+
+
+def menu_import(self, context):
+    self.layout.operator(CityGMLDirectorySelector.bl_idname, text="cityGML (.xml)")
 
 
 def register():
     bpy.utils.register_module(__name__)
+    bpy.types.INFO_MT_file_import.append(menu_import)
 
 
 def unregister():
+    bpy.types.INFO_MT_file_import.remove(menu_import)
     bpy.utils.unregister_module(__name__)
