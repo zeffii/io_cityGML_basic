@@ -1,6 +1,6 @@
 ## Readme 
 
-basic cityGML import script for Blender 2.7 and later
+basic cityGML import script for Blender 2.8 and later
 
 features:
  
