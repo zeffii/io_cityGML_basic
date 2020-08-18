@@ -1,8 +1,8 @@
 bl_info = {
     "name": "CityGML Import Basic",
     "author": "",
-    "version": (0, 1),
-    "blender": (2, 7, 6),
+    "version": (0, 2),
+    "blender": (2, 80, 0),
     "category": "Import-Export"
 }
 
@@ -10,12 +10,12 @@ import os
 from xml.etree import ElementTree as et
 
 import bpy
-from bpy_extras.io_utils import ExportHelper
+from bpy_extras.io_utils import ImportHelper
 
 
 def main(filename):
 
-    def unflatten(coords, s=0.002):
+    def unflatten(coords, s=0.001):
         return [(coords[i] * s, coords[i + 1] * s, coords[i + 2] * s) for i in range(0, len(coords), 3)]
 
     tree = et.parse(filename)
@@ -54,11 +54,11 @@ def main(filename):
     obj = bpy.data.objects.new("obj_name", mesh)
 
     scene = bpy.context.scene
-    scene.objects.link(obj)
+    scene.collection.objects.link(obj)
 
 
 # pick folder and import from... maybe this is a bad name.
-class CityGMLDirectorySelector(bpy.types.Operator, ExportHelper):
+class CityGMLDirectorySelector(bpy.types.Operator, ImportHelper):
     bl_idname = "wm.citygml_folder_selector"
     bl_label = "pick an xml file"
 
@@ -76,10 +76,10 @@ def menu_import(self, context):
 
 
 def register():
-    bpy.utils.register_module(__name__)
-    bpy.types.INFO_MT_file_import.append(menu_import)
+    bpy.utils.register_class(CityGMLDirectorySelector)
+    bpy.types.TOPBAR_MT_file_import.append(menu_import)
 
 
 def unregister():
-    bpy.types.INFO_MT_file_import.remove(menu_import)
-    bpy.utils.unregister_module(__name__)
+    bpy.types.TOPBAR_MT_file_import.remove(menu_import)
+    bpy.utils.unregister_class(CityGMLDirectorySelector)
